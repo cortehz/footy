@@ -1,4 +1,5 @@
 import { AppSidebar } from '@/components/app-sidebar';
+import { AppTopNav } from '@/components/app-top-nav';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { GeistSans } from 'geist/font/sans';
 import './globals.css';
@@ -20,11 +21,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang='en' className={GeistSans.className} suppressHydrationWarning>
-      <body className='bg-gray-100 text-foreground'>
+      <body className='flex flex-col bg-gray-100 text-foreground h-screen max-h-screen overflow-hidden'>
+        <AppTopNav />
         <SidebarProvider>
           <AppSidebar />
-          <main className='min-h-screen flex flex-col items-center p-4'>
-            <SidebarTrigger />
+          <SidebarTrigger />
+          <main className='flex flex-col items-center p-4 w-full bg-transparent mb-3 grow basis-0 overflow-y-auto'>
             {children}
           </main>
         </SidebarProvider>

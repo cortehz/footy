@@ -59,7 +59,7 @@ interface Odds {
   msg: string;
 }
 
-interface Match {
+export type Match = {
   area: Area;
   competition: Competition;
   season: Season;
@@ -75,7 +75,23 @@ interface Match {
   score: Score;
   odds: Odds;
   referees: Referee[];
-}
+};
+
+export type MatchesResponse = {
+  matches: Match[];
+  filters: {
+    dateFrom: string;
+    dateTo: string;
+    permission: string;
+  };
+  resultSet: {
+    count: number;
+    competitions: string;
+    first: string;
+    last: string;
+    played: number;
+  };
+};
 
 export interface FixturesResponse {
   filters: {

@@ -7,6 +7,7 @@ import {
 } from '@/components/ui/collapsible';
 import {
   Sidebar,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -14,13 +15,24 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { fetchFixtures2 } from '@/utils/api';
+import { api } from '@/utils/api';
 import { Competition, CompetitionsResponse } from '@/utils/competition';
 import { isObjectKey } from '@/utils/utils';
+import Link from 'next/link';
 
 export async function AppSidebar() {
-  const competitions: CompetitionsResponse = await fetchFixtures2();
-  const groupByLeagues = competitions.competitions.reduce(
+  const { data: competitions, error } =
+    await api.get<CompetitionsResponse>('competitions');
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  if (!competitions) {
+    return null;
+  }
+
+  const groupByLeagues = competitions?.competitions.reduce(
     (acc, competition) => {
       const competitionType = competition.type;
       if (!acc[competitionType]) {
@@ -38,7 +50,11 @@ export async function AppSidebar() {
         if (!isObjectKey(groupByLeagues, competitionType)) return null;
         const competitions = groupByLeagues[competitionType];
         return (
-          <Collapsible defaultOpen className='group/collapsible'>
+          <Collapsible
+            defaultOpen
+            className='group/collapsible mb-4'
+            key={competitionType}
+          >
             <SidebarGroup className='rounded-lg bg-white' key={competitionType}>
               <SidebarGroupLabel asChild>
                 <CollapsibleTrigger>
@@ -52,7 +68,9 @@ export async function AppSidebar() {
                     {competitions.map((competition) => (
                       <SidebarMenuItem key={competition.id}>
                         <SidebarMenuButton asChild>
-                          <span>{competition.name}</span>
+                          <Link href={`/competitions/${competition.id}`}>
+                            {competition.name}
+                          </Link>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
                     ))}
@@ -63,6 +81,12 @@ export async function AppSidebar() {
           </Collapsible>
         );
       })}
+
+      <SidebarFooter className='mt-auto'>
+        <p className='text-sm text-gray-500'>
+          &copy; {new Date().getFullYear()} Football Data. All rights reserved.
+        </p>
+      </SidebarFooter>
     </Sidebar>
   );
 }
